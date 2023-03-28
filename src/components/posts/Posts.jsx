@@ -1,7 +1,18 @@
 import Post from "../post/Post";
 import "./posts.scss";
+import { useQuery } from "@tanstack/react-query";
+import makeRequest from "../../axios.js";
 
 const Posts = () => {
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["getPosts"],
+    queryFn: () => makeRequest.get("/api/posts").then(res => res.data),
+  });
+
+  console.log(data,'data')
+
+  //  const res = await makeAxios.get('/api/posts')
+
   //TEMPORARY
   const posts = [
     {
@@ -23,11 +34,15 @@ const Posts = () => {
     },
   ];
 
-  return <div className="posts">
-    {posts.map(post=>(
-      <Post post={post} key={post.id}/>
-    ))}
-  </div>;
+  return (
+    <div className="posts">
+      {error
+        ? "error"
+        : isLoading
+        ? "loading"
+        : posts.map((post) => <Post post={post} key={post.id} />)}
+    </div>
+  );
 };
 
 export default Posts;
